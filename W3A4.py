@@ -1,3 +1,8 @@
+# The Scenario
+# Display the number of students enrolled in MSE800 (Professional Software Engineering).
+
+# List all teachers teaching MSE801 (Research Methods).
+
 # -------------------------------
 # OOP MODEL BASED ON YOUR COURSES
 # -------------------------------
@@ -112,3 +117,4 @@ print("Number of students in MSE800:", count_students_MSE800())
 print("\nTeachers teaching MSE801:")
 for teacher in list_teachers_MSE801():
     print("-", teacher)
+
