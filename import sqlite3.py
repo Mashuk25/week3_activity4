@@ -1,32 +1,41 @@
 import sqlite3
 
-# Connect to SQLite database (creates file if not exists)
 conn = sqlite3.connect("college.db")
 cursor = conn.cursor()
 
-# ---------------------------
-# CREATE TABLES
-# ---------------------------
+# DROP OLD TABLES
+cursor.execute("DROP TABLE IF EXISTS enrollment")
+cursor.execute("DROP TABLE IF EXISTS teacher")
+cursor.execute("DROP TABLE IF EXISTS student")
+cursor.execute("DROP TABLE IF EXISTS course")
 
+# CREATE TABLES
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS course (
-    course_code TEXT PRIMARY KEY,
-    course_name TEXT,
-    credits INTEGER
+CREATE TABLE student (
+    student_id INTEGER PRIMARY KEY,
+    name TEXT
 )
 """)
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS student (
-    student_id INTEGER PRIMARY KEY,
-    name TEXT,
+CREATE TABLE course (
+    course_code TEXT PRIMARY KEY,
+    course_name TEXT
+)
+""")
+
+cursor.execute("""
+CREATE TABLE enrollment (
+    student_id INTEGER,
     course_code TEXT,
+    PRIMARY KEY (student_id, course_code),
+    FOREIGN KEY(student_id) REFERENCES student(student_id),
     FOREIGN KEY(course_code) REFERENCES course(course_code)
 )
 """)
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS teacher (
+CREATE TABLE teacher (
     teacher_id INTEGER PRIMARY KEY,
     name TEXT,
     course_code TEXT,
@@ -34,23 +43,21 @@ CREATE TABLE IF NOT EXISTS teacher (
 )
 """)
 
-# ---------------------------
-# INSERT SAMPLE DATA
-# ---------------------------
+# INSERT DATA
+cursor.execute("INSERT INTO student VALUES (1,'Mashukh Elahi')")
+cursor.execute("INSERT INTO student VALUES (2,'Parul Patel')")
 
-cursor.execute("INSERT OR IGNORE INTO course VALUES ('MSE800','Professional Software Engineering',30)")
-cursor.execute("INSERT OR IGNORE INTO course VALUES ('MSE801','Research Methods',15)")
-cursor.execute("INSERT OR IGNORE INTO course VALUES ('MSE802','Quantum Computing',15)")
+cursor.execute("INSERT INTO course VALUES ('MSE800','Professional Software Engineering')")
+cursor.execute("INSERT INTO course VALUES ('MSE801','Research Methods')")
 
-cursor.execute("INSERT OR IGNORE INTO student VALUES (1,'Mashukh Elahi','MSE800')")
-cursor.execute("INSERT OR IGNORE INTO student VALUES (2,'Parul Patel','MSE800')")
-cursor.execute("INSERT OR IGNORE INTO student VALUES (3,'John Smith','MSE801')")
+cursor.execute("INSERT INTO enrollment VALUES (1,'MSE800')")
+cursor.execute("INSERT INTO enrollment VALUES (1,'MSE801')")
+cursor.execute("INSERT INTO enrollment VALUES (2,'MSE800')")
 
-cursor.execute("INSERT OR IGNORE INTO teacher VALUES (1,'Arun Kumar','MSE801')")
-cursor.execute("INSERT OR IGNORE INTO teacher VALUES (2,'Mohammad Rahim','MSE801')")
-cursor.execute("INSERT OR IGNORE INTO teacher VALUES (3,'Savita Bai','MSE800')")
+cursor.execute("INSERT INTO teacher VALUES (1,'Arun Kumar','MSE801')")
+cursor.execute("INSERT INTO teacher VALUES (2,'Mohammad Rahim','MSE801')")
 
 conn.commit()
 conn.close()
 
-print("Database setup completed successfully.")
+print("Database reset and setup complete.")
