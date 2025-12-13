@@ -1,128 +1,57 @@
-# The Scenario
-# Scenario
+import sqlite3
 
-#Yoobee College offers postgraduate programmes that include several courses, students, and teachers. To manage academic information efficiently,
-#the college plans to develop a College Course Management System using Object-Oriented Programming (OOP), based on the ER diagram designed in
-#Week 3 – Activity 3. The system models core entities such as Student, Teacher, and Course, along with their relationships, to accurately represent
-#the college’s academic structure.
+# ---------------------------
+# OOP CLASSES (Based on ERD)
+# ---------------------------
 
-#The system allows students to enroll in courses and teachers to be assigned to teach specific courses. It is designed to display the total number
-#of students enrolled in MSE800 (Professional Software Engineering) and to list all teachers teaching MSE801 (Research Methods). This project 
-#demonstrates how an ER diagram can be transformed into an OOP-based solution to handle real-world academic data management at Yoobee College.#
-
-# -------------------------------
-# OOP MODEL BASED ON YOUR COURSES
-# -------------------------------
-
-# Class to represent a Student
 class Student:
-    def __init__(self, student_id, first_name, last_name, email):
+    def __init__(self, student_id, name, course_code):
         self.student_id = student_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
+        self.name = name
+        self.course_code = course_code
 
 
-# Class to represent a Teacher
 class Teacher:
-    def __init__(self, teacher_id, first_name, last_name, address):
+    def __init__(self, teacher_id, name, course_code):
         self.teacher_id = teacher_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.address = address
+        self.name = name
+        self.course_code = course_code
 
 
-# Class to represent a Course
 class Course:
-    def __init__(self, course_id, course_name, credits):
-        self.course_id = course_id
+    def __init__(self, course_code, course_name, credits):
+        self.course_code = course_code
         self.course_name = course_name
         self.credits = credits
 
 
-# Relationship: Student enrolled in a course
-class Enrollment:
-    def __init__(self, student, course):
-        self.student = student
-        self.course = course
+# ---------------------------
+# DATABASE CONNECTION
+# ---------------------------
 
+conn = sqlite3.connect("college.db")
+cursor = conn.cursor()
 
-# Relationship: Teacher teaches a course
-class Teaching:
-    def __init__(self, teacher, course):
-        self.teacher = teacher
-        self.course = course
+# ---------------------------
+# REQUIRED OUTPUT 1
+# Count students in MSE800
+# ---------------------------
 
+cursor.execute("SELECT COUNT(*) FROM student WHERE course_code = 'MSE800'")
+student_count = cursor.fetchone()[0]
 
-# ---------------------------------------
-# CREATING DATA USING REAL COURSES
-# ---------------------------------------
+print("Number of students enrolled in MSE800:", student_count)
 
-# Students
-s1 = Student(1, "Mashukh", "Elahi", "mashukh@example.com")
-s2 = Student(2, "Parul", "Patel", "parul@example.com")
-s3 = Student(3, "John", "Smith", "john@example.com")
+# ---------------------------
+# REQUIRED OUTPUT 2
+# List teachers teaching MSE801
+# ---------------------------
 
-# Teachers
-t1 = Teacher(1, "Arun", "Kumar", "Auckland")
-t2 = Teacher(2, "Dr", "Mohammad", "Wellington")
-t3 = Teacher(3, "Savita", "Bai", "Hamilton")
-
-# Courses (Using exact real courses)
-c1 = Course("MSE800", "Professional Software Engineering", 30)
-c2 = Course("MSE801", "Research Methods", 15)
-c3 = Course("MSE802", "Quantum Computing", 15)
-
-# ---------------------------------------
-# ENROLLMENT RELATIONSHIPS
-# ---------------------------------------
-enrollments = [
-    Enrollment(s1, c1),
-    Enrollment(s2, c1),
-    Enrollment(s3, c2)  # only example data
-]
-
-# ---------------------------------------
-# TEACHING RELATIONSHIPS
-# ---------------------------------------
-teaching_assignments = [
-    Teaching(t1, c1),   # Teacher Arun teaches MSE800
-    Teaching(t2, c2),   # Teacher Mohammad teaches MSE801
-    Teaching(t3, c3)    # Teacher Savita teaches MSE802
-]
-
-
-# ---------------------------------------
-# FUNCTION 1: COUNT STUDENTS IN MSE800
-# ---------------------------------------
-def count_students_MSE800():
-    count = 0
-    for e in enrollments:
-        if e.course.course_id == "MSE800":
-            count += 1
-    return count
-
-
-# ---------------------------------------
-# FUNCTION 2: LIST TEACHERS FOR MSE801
-# ---------------------------------------
-def list_teachers_MSE801():
-    teacher_list = []
-    for t in teaching_assignments:
-        if t.course.course_id == "MSE801":
-            name = t.teacher.first_name + " " + t.teacher.last_name
-            teacher_list.append(name)
-    return teacher_list
-
-
-# ---------------------------------------
-# MAIN OUTPUT
-# ---------------------------------------
-print("---- RESULTS ----")
-print("Number of students in MSE800:", count_students_MSE800())
+cursor.execute("SELECT name FROM teacher WHERE course_code = 'MSE801'")
+teachers = cursor.fetchall()
 
 print("\nTeachers teaching MSE801:")
-for teacher in list_teachers_MSE801():
-    print("-", teacher)
+for teacher in teachers:
+    print("-", teacher[0])
 
-
+conn.close()
